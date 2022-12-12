@@ -51,7 +51,8 @@ state = [OrderCommercial.region,
          OrderCommercial.pay,
          MyOrders.main_menu,
          MyOrders.select_order,
-         Support.main_menu]
+         Support.main_menu,
+         UserMenu.menu]
 
 
 @dp.callback_query_handler(text='back_to_menu', state=state)

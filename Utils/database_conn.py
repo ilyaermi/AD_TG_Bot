@@ -15,7 +15,8 @@ class DatabaseConnector:
         """Creates table if not exists."""
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS User (
                                 user_id int,
-                                admin BOOLEAN
+                                admin BOOLEAN,
+                                verify BOOLEAN
                                 )''')
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS Orders (
                                 uid_order TEXT,

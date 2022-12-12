@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from uuid6 import uuid8
 
 @dataclass
 class UserInfo:
@@ -9,11 +9,12 @@ class UserInfo:
 
 @dataclass
 class OrderInfo:
-    uid_order:str
-    region: str
-    type_com:str
-    section:str
-    rate:str
-    billing:str
-    pay:bool
-    active:bool
+    uid_order:str=str(uuid8())
+    user_id:int = None
+    region: str=None
+    type_com:str=None
+    section:str=None
+    rate:str=None
+    billing:str=None
+    pay:bool=None
+    active:bool=None

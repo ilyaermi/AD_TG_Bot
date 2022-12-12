@@ -64,7 +64,7 @@ class Keyboards:
         start = cofop*page
         orders = orders[start:start+cofop]
         for num, order in enumerate(orders):
-            markup.insert(InlineKeyboardButton(text=f'Заказ {start+num+1}', callback_data=f'select_order_{order.uid_order}'))
+            markup.insert(InlineKeyboardButton(text=f'Заказ №{start+num+1}', callback_data=f'select_order_{order.uid_order}'))
 
 
         markup.insert(self.btn_back_to_menu)

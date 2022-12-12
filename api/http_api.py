@@ -25,7 +25,7 @@ class HttpUsers(Http):
     async def add_admin(self, user_id):
         check_admin = await self.execute_db(['SELECT * FROM User WHERE user_id=?', [user_id]])
         if len(check_admin) == 0:
-            await self.execute_db(['INSERT INTO User VALUES(?,?)', [user_id, True]])
+            await self.execute_db(['INSERT INTO User VALUES(?,?,?)', [user_id, True, True]])
         else:
             await self.execute_db(['UPDATE User SET admin=? WHERE user_id=?', [True, user_id]])
 
@@ -34,7 +34,10 @@ class HttpOrders(Http):
 
     async def get_orders(self, user_id: int) -> list[OrderInfo]:
         orders = await self.execute_db(['SELECT * FROM Orders WHERE user_id=?', [user_id]])
-        return [OrderInfo(*i[1:]) for i in orders]
+        return [OrderInfo(*i) for i in orders]
+
+    async def new_order(self, data:OrderInfo):
+        await self.execute_db(['INSERT INTO Orders VALUES(?,?,?,?,?,?,?,?,?)', list(data.__dict__.values())])
 
 
 http_users = HttpUsers()

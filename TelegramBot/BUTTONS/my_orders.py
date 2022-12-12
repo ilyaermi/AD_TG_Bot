@@ -26,9 +26,12 @@ async def my_orders(cq: CallbackQuery, state: FSMContext):
     msg = cq.message
     user_id = msg.chat.id
     orders = await http_orders.get_orders(user_id)
-    orders = [i for i in orders if i.active]
+    active_orders = []
+    for order in orders:
+        if order.active:
+            active_orders.append(order)
     await state.update_data(orders=orders, page=0)
-    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text='Активные заказы:', reply_markup=kbd.menu_order(orders=orders, page=0))
+    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text='Активные заказы:', reply_markup=kbd.menu_order(orders=active_orders, page=0))
     await MyOrders.next()
 
 
