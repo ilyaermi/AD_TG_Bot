@@ -43,8 +43,8 @@ class Keyboards:
 
     def support_menu(self):
         markup = InlineKeyboardMarkup(row_width=1)
-        markup.insert(InlineKeyboardButton(text='Хочу работать вместе с вами!',
-                      callback_data='work_with_us'))
+        # markup.insert(InlineKeyboardButton(text='Хочу работать вместе с вами!',
+        #               callback_data='work_with_us'))
         markup.insert(InlineKeyboardButton(
             text='Связь с админом', callback_data='write_admin'))
         markup.insert(self.btn_back_to_menu)
@@ -137,7 +137,7 @@ class Keyboards:
     def billing(self):
         markup = InlineKeyboardMarkup(row_width=2)
         markup.row(InlineKeyboardButton(
-            text='Связаться с поддержкой', callback_data='contact_suppport'))
+            text='Связаться с поддержкой', callback_data='write_admin'))
         markup.insert(InlineKeyboardButton(
             text='BEP20', callback_data='select_billing_BEP20'))
         markup.insert(InlineKeyboardButton(

@@ -43,15 +43,16 @@ async def fast_start(cq: CallbackQuery):
         reply_markup=menu_markup
     )
     await UserMenu.menu.set()
-state=[OrderCommercial.region,
-        OrderCommercial.type_com,
-        OrderCommercial.section,
-        OrderCommercial.rate,
-        OrderCommercial.billing,
-        OrderCommercial.pay,
-        MyOrders.main_menu,
-        MyOrders.select_order,
-        Support.main_menu]
+state = [OrderCommercial.region,
+         OrderCommercial.type_com,
+         OrderCommercial.section,
+         OrderCommercial.rate,
+         OrderCommercial.billing,
+         OrderCommercial.pay,
+         MyOrders.main_menu,
+         MyOrders.select_order,
+         Support.main_menu]
+
 
 @dp.callback_query_handler(text='back_to_menu', state=state)
 async def fast_start(cq: CallbackQuery, state: FSMContext):

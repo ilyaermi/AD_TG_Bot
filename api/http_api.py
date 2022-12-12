@@ -2,6 +2,7 @@ import aiohttp
 from typing import Coroutine
 from TelegramBot.classess import OrderInfo
 
+
 class Http:
     async def request(self, url, data=None, method='POST'):
         for i in range(3):
@@ -16,7 +17,8 @@ class Http:
 
     def execute_db(self, list_args: list) -> Coroutine:
         return self.request('execute_db',
-                                  data={'list_args': list_args}, method='POST')
+                            data={'list_args': list_args}, method='POST')
+
 
 class HttpUsers(Http):
 
@@ -27,11 +29,13 @@ class HttpUsers(Http):
         else:
             await self.execute_db(['UPDATE User SET admin=? WHERE user_id=?', [True, user_id]])
 
+
 class HttpOrders(Http):
 
-    async def get_orders(self, user_id:int) -> list[OrderInfo]:
+    async def get_orders(self, user_id: int) -> list[OrderInfo]:
         orders = await self.execute_db(['SELECT * FROM Orders WHERE user_id=?', [user_id]])
         return [OrderInfo(*i[1:]) for i in orders]
+
 
 http_users = HttpUsers()
 http_orders = HttpOrders()

@@ -67,11 +67,11 @@ async def order_commercial(cq: CallbackQuery, state: FSMContext):
     billing = cq.data.split('select_billing_')[1]
     await state.update_data(billing=billing, _msg=msg)
     wallet = cfg.payAdress_bep20 if billing == 'BEP20' else cfg.payAdress_trc20
-    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=f'Кошелек для оплаты:{wallet}\nВведите txid транзакции:', reply_markup='')
+    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=f'Кошелек для оплаты:{wallet}\nВведите txid транзакции:', reply_markup=kbd.single_menu_btn())
     await OrderCommercial.next()
 
 
-@dp.message_handler(state = OrderCommercial.pay)
+@dp.message_handler(state=OrderCommercial.pay)
 async def order_commercial(msg: Message, state: FSMContext):
     user_id = msg.chat.id
     data = await state.get_data()
@@ -84,18 +84,16 @@ async def order_commercial(msg: Message, state: FSMContext):
         time_start_check = time()
         while time() - time_start_check < 1800:
             if data['billing'] == 'BEP20':
-                if check_bep20_txs_status(_tx):
+                if await check_bep20_txs_status(_tx):
                     await bot.send_message(chat_id=user_id, text='Платёж получен!')
                     break
             else:
-                if check_trc20_txs_status(_tx):
+                if await check_trc20_txs_status(_tx):
                     await bot.send_message(chat_id=user_id, text='Платёж получен!')
                     break
             await sleep(30)
     else:
         await bot.edit_message_text(chat_id=user_id, message_id=_msg.message_id, text='Неверный формат, попробуй ещё раз.')
         return ''
-    
+
     await state.finish()
-
-

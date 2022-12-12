@@ -17,6 +17,4 @@ class ExecuteDb(BaseModel):
 
 @app.post('/execute_db')
 def execute_db(item: ExecuteDb):
-   return db.execute_db(item.list_args)
-
-
+    return db.execute_db(item.list_args)
