@@ -1,11 +1,12 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
+from .classess import OrderInfo
+from config import count_orders_for_one_page as cofop
 
 class Keyboards:
 
     def __init__(self):
         self.btn_back_to_menu = InlineKeyboardButton(
-            text='↩️Back to menu',
+            text='↩️Вернуться в меню',
             callback_data='back_to_menu'
         )
 
@@ -25,7 +26,7 @@ class Keyboards:
             callback_data='order_commercial'
         )
         btn_my_orders = InlineKeyboardButton(
-            text='My orders',
+            text='Мои заказы',
             callback_data='my_orders'
         )
         btn_collaboration = InlineKeyboardButton(
@@ -39,6 +40,35 @@ class Keyboards:
             main_menu.insert(btn)
 
         return main_menu
+
+    def support_menu(self):
+        markup = InlineKeyboardMarkup(row_width=1)
+        markup.insert(InlineKeyboardButton(text='Хочу работать вместе с вами!',
+                      callback_data='work_with_us'))
+        markup.insert(InlineKeyboardButton(
+            text='Связь с админом', callback_data='write_admin'))
+        markup.insert(self.btn_back_to_menu)
+        return markup
+
+    def my_orders(self):
+        markup = InlineKeyboardMarkup(row_width=1)
+        markup.insert(InlineKeyboardButton(text='Список активных заказов',
+                      callback_data='active_orders'))
+        markup.insert(InlineKeyboardButton(
+            text='Список истории заказов', callback_data='history_orders'))
+        markup.insert(self.btn_back_to_menu)
+        return markup
+
+    def menu_order(self, orders:list[OrderInfo], page = 0):
+        markup = InlineKeyboardMarkup(row_width=1)
+        start = cofop*page
+        orders = orders[start:start+cofop]
+        for num, order in enumerate(orders):
+            markup.insert(InlineKeyboardButton(text=f'Заказ {start+num+1}', callback_data=f'select_order_{order.uid_order}'))
+
+
+        markup.insert(self.btn_back_to_menu)
+        return markup
 
     def regions(self):
         markup = InlineKeyboardMarkup(row_width=1)

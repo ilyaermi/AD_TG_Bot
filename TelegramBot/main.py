@@ -10,7 +10,12 @@ loop = asyncio.get_event_loop()
 bot = Bot(cfg.BOT_TOKEN, parse_mode='HTML', disable_web_page_preview=True)
 dp = Dispatcher(bot, storage=storage, loop=loop)
 
+def start_bot():
+    from .handlers import dp, on_startup
+
+    executor.start_polling(dp, on_startup=on_startup)
+
 if __name__ == '__main__':
-    from handlers import dp, on_startup
+    from .handlers import dp, on_startup
 
     executor.start_polling(dp, on_startup=on_startup)

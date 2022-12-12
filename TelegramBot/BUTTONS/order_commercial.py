@@ -1,11 +1,14 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.types import Message, CallbackQuery
-
 from ..keyboards import Keyboards
 from ..main import dp, bot
+import config as cfg
+import re
 from ..states import OrderCommercial, UserMenu
-
+from ..check_pay import check_bep20_txs_status, check_trc20_txs_status
+from time import time
+from asyncio import sleep
 kbd = Keyboards()
 
 
@@ -62,6 +65,37 @@ async def order_commercial(cq: CallbackQuery, state: FSMContext):
     msg = cq.message
     user_id = msg.chat.id
     billing = cq.data.split('select_billing_')[1]
-    await state.update_data(billing=billing)
-    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text='Кошелек для оплаты:\nВведите txid транзакции', reply_markup='')
+    await state.update_data(billing=billing, _msg=msg)
+    wallet = cfg.payAdress_bep20 if billing == 'BEP20' else cfg.payAdress_trc20
+    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=f'Кошелек для оплаты:{wallet}\nВведите txid транзакции:', reply_markup='')
     await OrderCommercial.next()
+
+
+@dp.message_handler(state = OrderCommercial.pay)
+async def order_commercial(msg: Message, state: FSMContext):
+    user_id = msg.chat.id
+    data = await state.get_data()
+    _msg: Message = data['_msg']
+    await bot.delete_message(chat_id=user_id, message_id=msg.message_id)
+    _tx = msg.text
+    ans = re.findall('^', _tx)
+    if ans:
+        msg = await bot.send_message(chat_id=user_id, text='Проверяю...')
+        time_start_check = time()
+        while time() - time_start_check < 1800:
+            if data['billing'] == 'BEP20':
+                if check_bep20_txs_status(_tx):
+                    await bot.send_message(chat_id=user_id, text='Платёж получен!')
+                    break
+            else:
+                if check_trc20_txs_status(_tx):
+                    await bot.send_message(chat_id=user_id, text='Платёж получен!')
+                    break
+            await sleep(30)
+    else:
+        await bot.edit_message_text(chat_id=user_id, message_id=_msg.message_id, text='Неверный формат, попробуй ещё раз.')
+        return ''
+    
+    await state.finish()
+
+

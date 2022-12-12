@@ -8,7 +8,18 @@ class OrderCommercial(StatesGroup):
     section = State()
     rate = State()
     billing = State()
+    pay = State()
 
+
+class MyOrders(StatesGroup):
+    """State for register new user."""
+    main_menu = State()
+    select_order=State()
+
+
+class Support(StatesGroup):
+    """State for register new user."""
+    main_menu = State()
 
 class UserMenu(StatesGroup):
     menu = State()
