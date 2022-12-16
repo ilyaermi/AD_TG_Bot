@@ -97,11 +97,11 @@ class Keyboards:
     def type_coms(self):
         markup = InlineKeyboardMarkup(row_width=1)
         markup.insert(InlineKeyboardButton(
+            text='Канал', callback_data='select_type_com_Канал'))
+        markup.insert(InlineKeyboardButton(
             text='Розыгрыш', callback_data='select_type_com_Розыгрыш'))
         markup.insert(InlineKeyboardButton(
             text='Проект', callback_data='select_type_com_Проект'))
-        markup.insert(InlineKeyboardButton(
-            text='Канал', callback_data='select_type_com_Канал'))
         markup.insert(InlineKeyboardButton(
             text='Бот', callback_data='select_type_com_Бот'))
         markup.insert(self.btn_back_to_menu)
