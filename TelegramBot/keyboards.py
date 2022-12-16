@@ -83,14 +83,14 @@ class Keyboards:
 
     def regions(self):
         markup = InlineKeyboardMarkup(row_width=1)
-        markup.insert(InlineKeyboardButton(
-            text='Россия', callback_data='select_region_Россия'))
-        markup.insert(InlineKeyboardButton(text='Украина',
-                      callback_data='select_region_Украина'))
-        markup.insert(InlineKeyboardButton(text='Беларусь',
-                      callback_data='select_region_Беларусь'))
-        markup.insert(InlineKeyboardButton(text='Всё СНГ',
-                      callback_data='select_region_Всё СНГ'))
+        # markup.insert(InlineKeyboardButton(
+        #     text='Россия', callback_data='select_region_Россия'))
+        # markup.insert(InlineKeyboardButton(text='Украина',
+        #               callback_data='select_region_Украина'))
+        # markup.insert(InlineKeyboardButton(text='Беларусь',
+        #               callback_data='select_region_Беларусь'))
+        markup.insert(InlineKeyboardButton(text='СНГ',
+                      callback_data='select_region_СНГ'))
         markup.insert(self.btn_back_to_menu)
         return markup
 
@@ -109,8 +109,8 @@ class Keyboards:
 
     def sections(self):
         markup = InlineKeyboardMarkup(row_width=1)
-        markup.insert(InlineKeyboardButton(
-            text='Криптовалюты', callback_data='select_section_Криптовалюты'))
+        # markup.insert(InlineKeyboardButton(
+        #     text='Криптовалюты', callback_data='select_section_Криптовалюты'))
         markup.insert(InlineKeyboardButton(
             text='NFT', callback_data='select_section_NFT'))
         markup.insert(InlineKeyboardButton(
@@ -128,7 +128,7 @@ class Keyboards:
         markup.insert(InlineKeyboardButton(
             text='Life', callback_data='select_section_Life'))
         markup.insert(InlineKeyboardButton(
-            text='Смешанные', callback_data='select_section_Смешанные'))
+            text='Рандом', callback_data='select_section_Рандом'))
         markup.insert(self.btn_back_to_menu)
         return markup
 

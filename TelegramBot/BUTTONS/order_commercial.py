@@ -73,7 +73,7 @@ async def order_commercial(cq: CallbackQuery, state: FSMContext):
     order.billing = cq.data.split('select_billing_')[1]
     await state.update_data(order=order, _msg=msg)
     wallet = cfg.payAdress_bep20 if order.billing == 'BEP20' else cfg.payAdress_trc20
-    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=f'Кошелек для оплаты:{wallet}\nВведите txid транзакции:', reply_markup=kbd.single_menu_btn())
+    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=f'Кошелек для оплаты:\n<code>{wallet}</code>\nВведите txid транзакции:', reply_markup=kbd.single_menu_btn())
     await OrderCommercial.next()
 
 
