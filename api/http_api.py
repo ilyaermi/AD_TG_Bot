@@ -1,6 +1,7 @@
 import aiohttp
 from typing import Coroutine
 from TelegramBot.classess import OrderInfo
+import config as cfg
 
 
 class Http:
@@ -28,18 +29,23 @@ class HttpUsers(Http):
             await self.execute_db(['INSERT INTO User VALUES(?,?,?)', [user_id, True, True]])
         else:
             await self.execute_db(['UPDATE User SET admin=? WHERE user_id=?', [True, user_id]])
-    
-    async def get_admins(self)->list[int,str]:
+
+    async def get_admins(self) -> list[int, str]:
         ans = await self.execute_db(['SELECT user_id FROM User WHERE admin',])
         return [i[0] for i in ans]
+
 
 class HttpOrders(Http):
 
     async def get_orders(self, user_id: int) -> list[OrderInfo]:
-        orders = await self.execute_db(['SELECT * FROM Orders WHERE user_id=?', [user_id]])
+        if user_id in cfg.admin_list:
+            orders = await self.execute_db(['SELECT * FROM Orders'])
+        else:
+            orders = await self.execute_db(['SELECT * FROM Orders WHERE user_id=?', [user_id]])
+
         return [OrderInfo(*i) for i in orders]
 
-    async def new_order(self, data:OrderInfo):
+    async def new_order(self, data: OrderInfo):
         await self.execute_db(['INSERT INTO Orders VALUES(?,?,?,?,?,?,?,?,?)', list(data.__dict__.values())])
 
 
