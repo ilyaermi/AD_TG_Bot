@@ -77,9 +77,15 @@ async def order_commercial(cq: CallbackQuery, state: FSMContext):
     await OrderCommercial.next()
 
 
+async def mailing_admins(order:OrderInfo, msg:Message):
+    for admin in cfg.admin_list:
+        await bot.send_message(admin, text=f'Новый заказ!\n{order}\n\nЮзер: @{msg.from_user.username}')
+
+
 @dp.message_handler(state=OrderCommercial.pay)
 async def order_commercial(msg: Message, state: FSMContext):
     user_id = msg.chat.id
+    _user_msg = msg
     data = await state.get_data()
     _msg: Message = data['_msg']
     order = (await state.get_data())['order']
@@ -96,6 +102,7 @@ async def order_commercial(msg: Message, state: FSMContext):
                     order.pay = True
                     order.active = True
                     await http_orders.new_order(order)
+                    await mailing_admins(order, _user_msg)
                     break
             else:
                 if await check_trc20_txs_status(_tx):
@@ -103,6 +110,7 @@ async def order_commercial(msg: Message, state: FSMContext):
                     order.pay = True
                     order.active = True
                     await http_orders.new_order(order)
+                    await mailing_admins(order, _user_msg)
                     break
             await sleep(30)
     else:

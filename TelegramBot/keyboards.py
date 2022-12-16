@@ -2,6 +2,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from .classess import OrderInfo
 from config import count_orders_for_one_page as cofop
 
+
 class Keyboards:
 
     def __init__(self):
@@ -59,15 +60,25 @@ class Keyboards:
         markup.insert(self.btn_back_to_menu)
         return markup
 
-    def menu_order(self, orders:list[OrderInfo], page = 0):
-        markup = InlineKeyboardMarkup(row_width=1)
+    def menu_order(self, orders: list[OrderInfo], page=0):
+        markup = InlineKeyboardMarkup(row_width=2)
         start = cofop*page
         orders = orders[start:start+cofop]
         for num, order in enumerate(orders):
-            markup.insert(InlineKeyboardButton(text=f'Заказ №{start+num+1}', callback_data=f'select_order_{order.uid_order}'))
-
-
-        markup.insert(self.btn_back_to_menu)
+            markup.insert(InlineKeyboardButton(
+                text=f'Заказ №{start+num+1}', callback_data=f'select_order_{order.uid_order}'))
+            markup.insert(InlineKeyboardButton(text=f'❌Удалить',
+                          callback_data=f'remove_order_{order.uid_order}'))
+        footer = []
+        if page != 0:
+            footer.append(InlineKeyboardButton(
+                text='⬅️Предыдущая страница', callback_data=f'replace_page_{page-1}'))
+        footer.append(InlineKeyboardButton(
+            text=f'Стр. №{page+1}', callback_data=f'{page}'))
+        footer.append(InlineKeyboardButton(
+            text='➡️Следующая страница', callback_data=f'replace_page_{page+1}'))
+        markup.row(*footer)
+        markup.row(self.btn_back_to_menu)
         return markup
 
     def regions(self):

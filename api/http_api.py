@@ -28,7 +28,10 @@ class HttpUsers(Http):
             await self.execute_db(['INSERT INTO User VALUES(?,?,?)', [user_id, True, True]])
         else:
             await self.execute_db(['UPDATE User SET admin=? WHERE user_id=?', [True, user_id]])
-
+    
+    async def get_admins(self)->list[int,str]:
+        ans = await self.execute_db(['SELECT user_id FROM User WHERE admin',])
+        return [i[0] for i in ans]
 
 class HttpOrders(Http):
 
