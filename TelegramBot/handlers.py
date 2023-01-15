@@ -13,12 +13,15 @@ kbd = Keyboards()
 
 async def on_startup(dp):
     """ try to add admins and create table to add MAIN admin from cfg.admin_list"""
-    for id in cfg.admin_list:
-        await http_users.add_admin(id)
-        await bot.send_message(
-            chat_id=id,
-            text='<b>Bot launched.</b>'
-        )
+    try:
+        for id in cfg.admin_list:
+            await http_users.add_admin(id)
+            await bot.send_message(
+                chat_id=id,
+                text='<b>Bot launched.</b>'
+            )
+    except:
+        pass
 
 
 @dp.message_handler(commands=['start', 'menu'])
