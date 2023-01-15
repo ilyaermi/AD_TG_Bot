@@ -74,7 +74,9 @@ async def order_commercial(cq: CallbackQuery, state: FSMContext):
     order.billing = cq.data.split('select_billing_')[1]
     await state.update_data(order=order, _msg=msg)
     wallet = cfg.payAdress_bep20 if order.billing == 'BEP20' else cfg.payAdress_trc20
-    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=f'Кошелек для оплаты:\n<code>{wallet}</code>\nВведите txid транзакции:', reply_markup=kbd.single_menu_btn())
+    bank = 150 if order.rate == 'Standart' else 350 if order.rate == 'Premium' else 500 if order.rate == "Individual" else 1
+    await state.update_data(bank=bank)
+    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=f'Сумма: {bank}$\nКошелек для оплаты:\n<code>{wallet}</code>\nВведите txid транзакции:', reply_markup=kbd.single_menu_btn())
     await OrderCommercial.next()
 
 
@@ -100,7 +102,7 @@ async def order_commercial(msg: Message, state: FSMContext):
         time_start_check = time()
         while time() - time_start_check < 1800:
             if order.billing == 'BEP20':
-                if await check_bep20_txs_status(_tx):
+                if await check_bep20_txs_status(_tx, data['bank']):
                     await bot.send_message(chat_id=user_id, text='Платёж получен!', reply_markup=kbd.single_menu_btn())
                     order.pay = True
                     order.active = True
@@ -108,7 +110,7 @@ async def order_commercial(msg: Message, state: FSMContext):
                     await mailing_admins(order, _user_msg)
                     break
             else:
-                if await check_trc20_txs_status(_tx):
+                if await check_trc20_txs_status(_tx, data['bank']):
                     await bot.send_message(chat_id=user_id, text='Платёж получен!', reply_markup=kbd.single_menu_btn())
                     order.pay = True
                     order.active = True

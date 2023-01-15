@@ -3,7 +3,7 @@ import config as cfg
 import aiohttp
 
 
-async def check_bep20_txs_status(txhash: str) -> bool:
+async def check_bep20_txs_status(txhash: str, bank:int) -> bool:
     '''returns True if transaction OKAY, else False'''
     async with BscScan('84NBSBD1U1AQ4Q89G53A5JCT8RU4FQU56C') as client:
         res = await client.get_bep20_token_transfer_events_by_address(
@@ -16,12 +16,12 @@ async def check_bep20_txs_status(txhash: str) -> bool:
                 if i['contractAddress'] == cfg.USDTcontractAddress_bep20:
                     if (i['to']).lower() == cfg.payAdress_bep20:
                         USDT = (int(i['value']) / 1000000000000000000)
-                        if USDT >= cfg.amount:
+                        if USDT >= bank:
                             return True
         return False
 
 
-async def check_trc20_txs_status(txhash: str) -> bool:
+async def check_trc20_txs_status(txhash: str, bank:int) -> bool:
     '''https://github.com/tronscan/tronscan-frontend/blob/dev2019/document/api.md
     return True if transaction OKAY, else False'''
     url = f'https://apilist.tronscan.org/api/transaction?sort=-timestamp&count=true&limit=20&start=0&address={cfg.payAdress_trc20}'
@@ -34,6 +34,6 @@ async def check_trc20_txs_status(txhash: str) -> bool:
             contract_adress_USDT = trans['trigger_info']['contract_address']
             if contract_adress_USDT == cfg.USDTcontractAddress_trc20:
                 if reciever == cfg.payAdress_trc20:
-                    if value >= cfg.amount:
+                    if value >= bank:
                         return True
     return False
