@@ -1,7 +1,7 @@
 import os
 homeDir = (r'\\').join(os.path.abspath(__file__).split('\\')[:-1])
 
-BOT_TOKEN = '5334439271:AAFWmpskZqlpS35ezK99bWEeEI8NLV5SEZQ'
+BOT_TOKEN = '5962344192:AAFXJK4n2cR7mNr2vIj9ADtPbWUVOfChqO8'
 admin_list = [1021524873, 516566088]
 admin_tag = '@...'
 count_orders_for_one_page = 10
