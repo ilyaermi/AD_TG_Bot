@@ -18,3 +18,5 @@ class OrderInfo:
     billing:str=None
     pay:bool=None
     active:bool=None
+    tx_hash:str=None
+    user_url:str=None

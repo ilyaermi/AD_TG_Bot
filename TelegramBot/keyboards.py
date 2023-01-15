@@ -18,6 +18,12 @@ class Keyboards:
 
         return menu_btn
 
+    def kbd_with_btn_url(self, url, markup=None):
+        markup = InlineKeyboardMarkup(row_width=1) if not markup else markup
+        markup.add(InlineKeyboardButton(
+            text='Перейти в чат с юзером', url=url))
+        return markup
+
     def main_menu(self):
         """returns start markup"""
         main_menu = InlineKeyboardMarkup(row_width=1)

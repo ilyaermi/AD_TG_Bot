@@ -27,7 +27,9 @@ class DatabaseConnector:
                                 rate TEXT,
                                 billing TEXT,
                                 pay BOOLEAN,
-                                active BOOLEAN
+                                active BOOLEAN,
+                                tx_hash TEXT,
+                                user_url TEXT
                                 )''')
         self.db.commit()
 

@@ -12,5 +12,5 @@ USDTcontractAddress_bep20 = '0x55d398326f99059ff775485246999027b3197955'
 USDTcontractAddress_trc20 = ''
 amount = 100
 host_url = 'localhost'
-port = 8000
+port = 8002
 db_path = f'{homeDir}\\DBs\\db.db'

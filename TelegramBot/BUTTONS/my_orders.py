@@ -55,10 +55,15 @@ async def my_orders(cq: CallbackQuery, state: FSMContext):
     orders: list[OrderInfo] = (await state.get_data())['orders']
     page = (await state.get_data())['page']
     order = [i for i in orders if i.uid_order == select_order][0]
+    markup = kbd.menu_order(orders=orders, page=0)
+    if user_id in cfg.admin_list:
+        markup = kbd.kbd_with_btn_url(order.user_url, markup)
     await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=f'Регион - {order.region}\n'
                                 f'Тип рекламы - {order.type_com}\n'
                                 f'Раздел рекламы - {order.section}\n'
-                                f'Тариф рекламы - {order.rate}\n', reply_markup=kbd.menu_order(orders=orders, page=0))
+                                f'Тариф рекламы - {order.rate}\n'
+                                f'Сеть оплаты - {order.billing}\n'
+                                f'hash - {order.tx_hash}', reply_markup=markup)
 
 
 @dp.callback_query_handler(Text(startswith='remove_order_'), state=MyOrders.select_order)
@@ -69,6 +74,8 @@ async def my_orders(cq: CallbackQuery, state: FSMContext):
     orders: list[OrderInfo] = (await state.get_data())['orders']
     page = (await state.get_data())['page']
     order = [i for i in orders if i.uid_order == select_order][0]
+    order.active = False
+    await http_orders.update_order(order)
     orders.remove(order)
     await state.update_data(orders=orders)
     await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=f'Заказ удалён.', reply_markup=kbd.menu_order(orders=orders, page=page))

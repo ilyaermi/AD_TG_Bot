@@ -1,5 +1,6 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.types import Message, CallbackQuery
 from ..keyboards import Keyboards
 from ..main import dp, bot
@@ -28,7 +29,7 @@ async def order_commercial(cq: CallbackQuery, state: FSMContext):
     user_id = msg.chat.id
     region = cq.data.split('select_region_')[1]
     await state.update_data(order=OrderInfo(region=region, user_id=user_id))
-    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text='Выберите тип рекламы:', reply_markup=kbd.type_coms())
+    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text='Выберете раздел,чтобы мы подобрали для Вас наиболее заинтересованную аудиторию:', reply_markup=kbd.type_coms())
     await OrderCommercial.next()
 
 
@@ -39,7 +40,7 @@ async def order_commercial(cq: CallbackQuery, state: FSMContext):
     order = (await state.get_data())['order']
     order.type_com = cq.data.split('select_type_com_')[1]
     await state.update_data(order=order)
-    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text='Выберите раздел рекламы:', reply_markup=kbd.sections())
+    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text='Пожалуйста помогите нам определить тематику вашего канала под рекламу:', reply_markup=kbd.sections())
     await OrderCommercial.next()
 
 
@@ -50,7 +51,7 @@ async def order_commercial(cq: CallbackQuery, state: FSMContext):
     order = (await state.get_data())['order']
     order.section = cq.data.split('select_section_')[1]
     await state.update_data(order=order)
-    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text='Выберите тариф рекламы:', reply_markup=kbd.rates())
+    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text='Пожалуйста,выберете наиболее подходящий для вас тариф. Нажмите на тариф и узнайте подробней:', reply_markup=kbd.rates())
     await OrderCommercial.next()
 
 
@@ -79,7 +80,7 @@ async def order_commercial(cq: CallbackQuery, state: FSMContext):
 
 async def mailing_admins(order:OrderInfo, msg:Message):
     for admin in cfg.admin_list:
-        await bot.send_message(admin, text=f'Новый заказ!\n{order}\n\nЮзер: @{msg.from_user.username}')
+        await bot.send_message(admin, text=f'Новый заказ!\n{order}\n\nЮзер: @{msg.from_user.username}', reply_markup=kbd.kbd_with_btn_url(order.user_url))
 
 
 @dp.message_handler(state=OrderCommercial.pay)
@@ -93,12 +94,14 @@ async def order_commercial(msg: Message, state: FSMContext):
     _tx = msg.text
     ans = re.findall('^', _tx)
     if ans:
+        order.tx_hash = _tx
+        order.user_url = msg.from_user.url
         msg = await bot.edit_message_text(chat_id=user_id, message_id=_msg.message_id, text='Проверяю...')
         time_start_check = time()
         while time() - time_start_check < 1800:
             if order.billing == 'BEP20':
                 if await check_bep20_txs_status(_tx):
-                    await bot.send_message(chat_id=user_id, text='Платёж получен!')
+                    await bot.send_message(chat_id=user_id, text='Платёж получен!', reply_markup=kbd.single_menu_btn())
                     order.pay = True
                     order.active = True
                     await http_orders.new_order(order)
@@ -106,13 +109,16 @@ async def order_commercial(msg: Message, state: FSMContext):
                     break
             else:
                 if await check_trc20_txs_status(_tx):
-                    await bot.send_message(chat_id=user_id, text='Платёж получен!')
+                    await bot.send_message(chat_id=user_id, text='Платёж получен!', reply_markup=kbd.single_menu_btn())
                     order.pay = True
                     order.active = True
                     await http_orders.new_order(order)
                     await mailing_admins(order, _user_msg)
                     break
             await sleep(30)
+        if time() - time_start_check >= 1800:
+            msg = await bot.edit_message_text(chat_id=user_id, message_id=_msg.message_id, text='Платёж не получен.')
+            await state.finish()
     else:
         await bot.edit_message_text(chat_id=user_id, message_id=_msg.message_id, text='Неверный формат, попробуй ещё раз.')
         return ''
